@@ -16,8 +16,17 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="1" column="2">
     <widget class="QPushButton" name="quit">
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
      <property name="text">
       <string>quit</string>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -26,12 +35,18 @@
      <property name="text">
       <string>clear</string>
      </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
     </widget>
    </item>
    <item row="1" column="0">
     <widget class="QPushButton" name="helloworld">
      <property name="text">
       <string>helloworld</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
