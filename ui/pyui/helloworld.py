@@ -5,9 +5,12 @@ from PyQt5.QtCore import *
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QDialog,QApplication
-from ..helloworld import Ui_Dialog
+# from ..ui_remix import Ui_Dialog
+from mypyqt.ui.ui_remix import Ui_Dialog
+from ethjsonrpc import EthJsonRpc
 
 class HelloWorld(QDialog,Ui_Dialog):
+    ethworker = pyqtSignal(object)
 
     def __init__(self):
         super(HelloWorld, self).__init__(None, Qt.Dialog | Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint)
@@ -18,13 +21,15 @@ class HelloWorld(QDialog,Ui_Dialog):
         # self.setWindowFlags(Qt.W)
         self.work = WorkThread()
         self.work.trigger.connect(self.hello)
+        self.ethworker.connect(self.work.EthClient)
         self.button = True
 
     @pyqtSlot()
-    def on_helloworld_clicked(self):
+    def on_lianjie_clicked(self):
         if self.button:
-            self.helloworld.setText("stop")
-            self.button = False
+            # self.helloworld.setText("stop")
+            # self.button = False
+            self.ethworker.emit(EthJsonRpc(host=self.dizhi.text(),port=443,tls=True))
             self.work.start()
         else:
             self.helloworld.setText("start")
@@ -33,11 +38,11 @@ class HelloWorld(QDialog,Ui_Dialog):
 
     @pyqtSlot(str)
     def hello(self,string):
-        self.textBrowser.append(string)
+        self.zhanshi.append(string)
 
     @pyqtSlot()
     def on_clear_clicked(self):
-        self.textBrowser.clear()
+        self.zhanshi.clear()
 
     @pyqtSlot()
     def on_quit_clicked(self):
@@ -48,14 +53,20 @@ class WorkThread(QThread):
 
     def __init__(self):
         super(WorkThread,self).__init__()
+        self.ethClient = None
 
     def __del__(self):
         self.wait()
 
+    @pyqtSlot(object)
+    def EthClient(self,C):
+        self.ethClient = C
+
     def run(self):
-        for i in range(100):
-            time.sleep(1)
-            self.trigger.emit("test2")
+        resp = self.ethClient.eth_blockNumber()
+        print(resp)
+        self.trigger.emit(str(resp))
+
 
 
 if __name__ == '__main__':

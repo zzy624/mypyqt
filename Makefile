@@ -1,5 +1,5 @@
 pyui:
-	pyuic5 -o helloworld.py helloworld.uipip
+	pyuic5 -o ./ui/ui_remix.py ./skin/remix.ui
 
 app:
 	py2applet --make-setup main.py
