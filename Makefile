@@ -1,5 +1,5 @@
 pyui:
-	pyuic5 -o ./ui/ui_remix.py ./skin/remix.ui
+	pyuic5 -o ./ui/ui_yglian.py ./skin/yglian.ui
 
 app:
 	py2applet --make-setup main.py
