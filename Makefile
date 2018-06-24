@@ -1,8 +1,22 @@
 pyui:
-	pyuic5 -o ./ui/ui_yglian.py ./skin/yglian.ui
-
+	pyuic5 -o ./ui/pyui/ui_yglian.py ./skin/yglian.ui
+	pyrcc5 -o ./ui/pyui/icons_rc.py ./res/icons.qrc
 app:
 	py2applet --make-setup main.py
 
 build:
-	python3 setup.py py2app
+	pyinstaller --noconfirm --clean main.py
+
+relse:
+	pyinstaller --distpath=out  \
+              --workpath=out/build  \
+              --hidden-import=cytoolz._signatures\
+              --hidden-import=cytoolz.utils\
+              --paths=./ui/pyui/\
+              --specpath=out  \
+              --noconfirm \
+              --clean\
+              -n Yglian \
+              -a\
+              -Fw main.py  \
+              --icon res/tools.icns\

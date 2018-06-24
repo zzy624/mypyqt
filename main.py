@@ -3,7 +3,9 @@
 import sys
 
 from PyQt5.QtWidgets import QApplication
-from ui.pyui.yglian import Yglian
+
+from mypyqt.ui.yglian import Yglian
+
 
 class MainWindow(Yglian):
 

@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>阳光链调试工具</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>:/ico/tools.ico</normaloff>:/ico/tools.ico</iconset>
+  </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
@@ -122,6 +126,10 @@
      <widget class="QPushButton" name="pushButtonConnect">
       <property name="text">
        <string>连接</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../res/icons.qrc">
+        <normaloff>:/ico/tools.icns</normaloff>:/ico/tools.icns</iconset>
       </property>
      </widget>
     </item>
@@ -415,6 +423,8 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../res/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

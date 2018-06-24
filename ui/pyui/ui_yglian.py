@@ -12,6 +12,9 @@ class Ui_yglian(object):
     def setupUi(self, yglian):
         yglian.setObjectName("yglian")
         yglian.resize(666, 457)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/ico/tools.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        yglian.setWindowIcon(icon)
         self.layoutWidget = QtWidgets.QWidget(yglian)
         self.layoutWidget.setGeometry(QtCore.QRect(20, 60, 631, 34))
         self.layoutWidget.setObjectName("layoutWidget")
@@ -52,6 +55,9 @@ class Ui_yglian(object):
         self.lineEditWeb3No.setObjectName("lineEditWeb3No")
         self.horizontalLayout.addWidget(self.lineEditWeb3No)
         self.pushButtonConnect = QtWidgets.QPushButton(self.layoutWidget1)
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(":/ico/tools.icns"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButtonConnect.setIcon(icon1)
         self.pushButtonConnect.setObjectName("pushButtonConnect")
         self.horizontalLayout.addWidget(self.pushButtonConnect)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -172,3 +178,4 @@ class Ui_yglian(object):
         self.label_10.setText(_translate("yglian", "Nonce"))
         self.label_11.setText(_translate("yglian", "Data"))
 
+import icons_rc

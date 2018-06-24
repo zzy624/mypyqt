@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="ico">
+    <file>tools.icns</file>
+  </qresource>
+</RCC>

@@ -1,14 +1,11 @@
 # -*-coding:utf-8-*-
 
-import sys, time, os
-import json
+import sys
+
 from PyQt5.QtCore import *
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QDialog, QApplication
-# from ..ui_remix import Ui_Dialog
-from mypyqt.ui.ui_yglian import Ui_yglian
-from ..ui_yglian import Ui_yglian
+from mypyqt.ui.pyui.ui_yglian import Ui_yglian
 from ethjsonrpc import EthJsonRpc
 
 
