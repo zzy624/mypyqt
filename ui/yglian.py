@@ -1,17 +1,18 @@
 # -*-coding:utf-8-*-
 
-import sys
-
+import sys,time
+# import cgitb
+# cgitb.enable( format = 'text')
 from PyQt5.QtCore import *
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QDialog, QApplication
+from PyQt5.QtWidgets import QDialog, QApplication,QMessageBox
 from mypyqt.ui.pyui.ui_yglian import Ui_yglian
 from ethjsonrpc import EthJsonRpc
 
 
 class Yglian(QDialog, Ui_yglian):
     ethClient = pyqtSignal(object)
-    call = pyqtSignal(str, str)
+    finishedWork = pyqtSignal()
 
     def __init__(self):
         super(Yglian, self).__init__()
@@ -22,16 +23,23 @@ class Yglian(QDialog, Ui_yglian):
         # self.setWindowFlags(Qt.WindowCloseButtonHint)
 
         # self.setWindowFlags(Qt.W)
-        self.work = WorkThread()
-        self.work.response.connect(self.connect_show)
+        self.work = WorkThreadEthConnect()
+        self.thread = QThread()
+
+        self.finishedWork.connect(self.work.Finished)
         self.ethClient.connect(self.work.EthClient)
-        self.call.connect(self.work.Call)
-        self.pushButtonConnectbutton = True
+
+        self.work.moveToThread(self.thread)
+        self.work.finished.connect(self.thread.quit)
+        self.thread.started.connect(self.work.run)
+
+        self.work.response.connect(self.connect_show)
+        self.pushButtonConnectButton = True
         self.client = None
 
     @pyqtSlot()
     def on_pushButtonConnect_clicked(self):
-        if self.pushButtonConnectbutton:
+        if self.pushButtonConnectButton:
             host = self.lineEditWeb3No.text()
             if "https" in host:
                 _port = 443
@@ -39,27 +47,40 @@ class Yglian(QDialog, Ui_yglian):
             else:
                 _port = host.split(':')[2]
                 _host = host.split(':')[1].split('//')[1]
-            self.client = EthJsonRpc(host=_host, port=_port, tls=True)
+            try:
+                self.client = EthJsonRpc(host=_host, port=_port, tls=True)
+            except Exception as e:
+                QMessageBox.information(self,"Information",str(e))
+                return
+            if self.client.net_listening():
+                self.pushButtonConnectButton = False
+                self.pushButtonConnect.setText("断开")
+                self.textBrowserBlockNumber.clear()
+            else:
+                QMessageBox.warning("Warning", "节点链接失败，请检查节点")
             self.ethClient.emit(self.client)
-            self.work.start()
+            self.thread.start()
         else:
             try:
-                self.work.terminate()
-                self.pushButtonConnectbutton = True
+                self.finishedWork.emit()
                 self.textBrowserBlockNumber.clear()
+                self.pushButtonConnectButton = True
                 self.pushButtonConnect.setText("连接")
             except BaseException as e:
                 print(e)
-                self.pushButtonConnectbutton = True
+                self.pushButtonConnectButton = True
                 self.textBrowserBlockNumber.clear()
                 self.pushButtonConnect.setText("连接")
+    def Close(self):
+        self.pushButtonConnectButton = True
+        self.textBrowserBlockNumber.clear()
+        self.pushButtonConnect.setText("连接")
 
     @pyqtSlot(str)
     def connect_show(self, string):
         self.textBrowserBlockNumber.setText(string)
-        if string:
-            self.pushButtonConnectbutton = False
-            self.pushButtonConnect.setText("断开")
+        if self.pushButtonConnectButton:
+            self.textBrowserBlockNumber.clear()
 
     @pyqtSlot()
     def on_pushButtonSearch_clicked(self):
@@ -81,35 +102,39 @@ class Yglian(QDialog, Ui_yglian):
         self.close()
 
 
-class WorkThread(QThread):
+class WorkThreadEthConnect(QObject):
     response = pyqtSignal(str)
+    finished = pyqtSignal()
 
     def __init__(self):
-        super(WorkThread, self).__init__()
-        self.ethClient = None
+        super(WorkThreadEthConnect, self).__init__()
+        self.client = None
         self.call = None
         self.value = ""
+        self.WorkState = True
 
-    def __del__(self):
-        self.wait()
 
-    @pyqtSlot(object)
     def EthClient(self, Client):
-        self.ethClient = Client
+        self.client = Client
+        self.WorkState = True
 
-    @pyqtSlot(str, str)
-    def Call(self, call, value):
-        self.call = call
-        self.value = value
+    def Finished(self):
+        print("Finished")
+        self.WorkState = False
+        self.finished.emit()
 
     def run(self):
-        while True:
-            resp = self.ethClient.eth_blockNumber()
+        while self.WorkState:
+            resp = self.client.eth_blockNumber()
             self.response.emit(str(resp))
+
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     dlg = Yglian()
     dlg.show()
-    app.exec_()
+    try:
+        app.exec_()
+    except Exception as e:
+        print(e)
