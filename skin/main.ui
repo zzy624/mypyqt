@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>mainWindow</class>
+ <widget class="QMainWindow" name="mainWindow">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>阳光链开发调试工具</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="acceptDrops">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="file">
+    <property name="title">
+     <string>导入</string>
+    </property>
+    <addaction name="actionKeyStore"/>
+   </widget>
+   <widget class="QMenu" name="window">
+    <property name="title">
+     <string>窗口</string>
+    </property>
+    <addaction name="action_windowMin"/>
+    <addaction name="action_windowMax"/>
+   </widget>
+   <widget class="QMenu" name="help">
+    <property name="title">
+     <string>帮助</string>
+    </property>
+    <addaction name="action_node"/>
+   </widget>
+   <addaction name="file"/>
+   <addaction name="window"/>
+   <addaction name="help"/>
+  </widget>
+  <action name="actionKeyStore">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>keyStore</string>
+   </property>
+  </action>
+  <action name="action_windowMin">
+   <property name="text">
+    <string>最小化</string>
+   </property>
+  </action>
+  <action name="action_node">
+   <property name="text">
+    <string>阳光链节点</string>
+   </property>
+  </action>
+  <action name="action_windowMax">
+   <property name="text">
+    <string>进入全屏</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

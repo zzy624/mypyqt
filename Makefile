@@ -1,5 +1,5 @@
 pyui:
-	pyuic5 -o ./ui/pyui/ui_yglian.py ./skin/yglian.ui
+	pyuic5 -o ./ui/pyui/ui_main.py ./skin/main.ui
 	pyrcc5 -o ./ui/pyui/icons_rc.py ./res/icons.qrc
 app:
 	py2applet --make-setup main.py
