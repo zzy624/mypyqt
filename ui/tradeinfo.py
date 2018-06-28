@@ -6,16 +6,16 @@ import sys,time
 from PyQt5.QtCore import *
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QDialog, QApplication,QMessageBox
-from mypyqt.ui.pyui.ui_yglian import Ui_yglian
+from mypyqt.ui.pyui.ui_tradeinfo import Ui_tradeinfo
 from ethjsonrpc import EthJsonRpc
 
 
-class Yglian(QDialog, Ui_yglian):
+class TradeInfo(QDialog, Ui_tradeinfo):
     ethClient = pyqtSignal(object)
     finishedWork = pyqtSignal()
 
     def __init__(self):
-        super(Yglian, self).__init__()
+        super(TradeInfo, self).__init__()
         # super(Yglian, self).__init__(None, Qt.Dialog | Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint)
 
         self.setupUi(self)
@@ -132,7 +132,7 @@ class WorkThreadEthConnect(QObject):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    dlg = Yglian()
+    dlg = TradeInfo()
     dlg.show()
     try:
         app.exec_()
