@@ -1,5 +1,5 @@
 pyui:
-	pyuic5 -o ./ui/pyui/ui_permission.py ./skin/permission.ui
+	pyuic5 -o ./ui/pyui/ui_account.py ./skin/account.ui
 qrc:
 	pyrcc5 -o ./ui/pyui/icons_rc.py ./res/icons.qrc
 app:

@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import  QApplication,QMainWindow,QAction,qApp,QFileDialog
 from mypyqt.ui.pyui.ui_main import Ui_mainWindow
 from ui.tradeinfo import TradeInfo
 from ui.permission import Permission
+from ui.account import Account
 
 
 class UIMainWindow(QMainWindow,Ui_mainWindow):
@@ -14,9 +15,10 @@ class UIMainWindow(QMainWindow,Ui_mainWindow):
         super(UIMainWindow, self).__init__()
         self.setupUi(self)
         self.tabWidget.clear()
+        self.account = Account()
         self.tradeInfo = TradeInfo()
         self.permission = Permission()
-        tabs = [self.tradeInfo,self.permission]
+        tabs = [self.account,self.tradeInfo,self.permission]
         for t in tabs:
             self.addTab(t)
         self.actionKeyStore.triggered.connect(self.OpenKeyStore)
