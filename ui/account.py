@@ -11,10 +11,13 @@ from mypyqt.ui.pyui.ui_account import Ui_account
 import json
 import os
 import random
-from ethereum.tools import keys
+# from ethereum.tools import keys
+from mypyqt.ui import keys
 # from pyethapp.accounts import Account
 from ethereum.utils import privtopub  # this is different  than the one used in devp2p.crypto
-from ethereum.utils import sha3, is_string, decode_hex, remove_0x_head,encode_hex
+from ethereum.utils import sha3, is_string, decode_hex, remove_0x_head,encode_hex,encode_int32
+import bitcoin
+import binascii
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from eth_utils.hexadecimal import decode_hex
@@ -30,103 +33,22 @@ class MyAccount(QDialog, Ui_account):
     @pyqtSlot()
     def on_pushButton_genAddress_clicked(self):
         a = Account.new("123")
-        print("address:",a.address)
+        print("address:",encode_hex(a.address))
         print("keystore:",a.keystore)
         print("privkey",a.privkey)
         print("pubkey",a.pubkey)
+        # public_key = encode_hex(bitcoin.privkey_to_pubkey(key))
+        self.label_address.setText("0x"+encode_hex(a.address))
+        self.label_pubKey.setText(str(a.pubkey))
+        self.label_priKey.setText(encode_hex(a.privkey))
+        self.textBrowser_keyStore.setText(str(a.keystore))
 
 
-
-# def mk_privkey(seed):
-#     return sha3(seed)
-#
-#
 def mk_random_privkey():
     k = hex(random.getrandbits(256))[2:-1].zfill(64)
     assert len(k) == 64
-    print(decode_hex(k))
     # return k.decode('hex')
     return decode_hex(k)
-#
-# def aes_ctr_encrypt(text, key, params):
-#     iv = big_endian_to_int(decode_hex(params["iv"]))
-#     ctr = Counter.new(128, initial_value=iv, allow_wraparound=True)
-#     mode = AES.MODE_CTR
-#     encryptor = AES.new(key, mode, counter=ctr)
-#     return encryptor.encrypt(text)
-#
-#
-# def aes_ctr_decrypt(text, key, params):
-#     iv = big_endian_to_int(decode_hex(params["iv"]))
-#     ctr = Counter.new(128, initial_value=iv, allow_wraparound=True)
-#     mode = AES.MODE_CTR
-#     encryptor = AES.new(key, mode, counter=ctr)
-#     return encryptor.decrypt(text)
-#
-# def aes_mkparams():
-#     return {"iv": encode_hex(os.urandom(16))}
-#
-# def mk_pbkdf2_params():
-#     params = PBKDF2_CONSTANTS.copy()
-#     params['salt'] = encode_hex(os.urandom(16))
-#     return params
-#
-# def pbkdf2_hash(val, params):
-#     assert params["prf"] == "hmac-sha256"
-#     return pbkdf2.PBKDF2(val, decode_hex(params["salt"]), params["c"],
-#                          SHA256).read(params["dklen"])
-#
-# ciphers = {
-#     "aes-128-ctr": {
-#         "encrypt": aes_ctr_encrypt,
-#         "decrypt": aes_ctr_decrypt,
-#         "mkparams": aes_mkparams
-#     }
-# }
-# kdfs = {
-#     "pbkdf2": {
-#         "calc": pbkdf2_hash,
-#         "mkparams": mk_pbkdf2_params
-#     }
-# }
-#
-# def make_keystore_json(priv, pw, kdf="pbkdf2", cipher="aes-128-ctr"):
-#     # Get the hash function and default parameters
-#     if kdf not in kdfs:
-#         raise Exception("Hash algo %s not supported" % kdf)
-#     kdfeval = kdfs[kdf]["calc"]
-#     kdfparams = kdfs[kdf]["mkparams"]()
-#     # Compute derived key
-#     derivedkey = kdfeval(pw, kdfparams)
-#     # Get the cipher and default parameters
-#     if cipher not in ciphers:
-#         raise Exception("Encryption algo %s not supported" % cipher)
-#     encrypt = ciphers[cipher]["encrypt"]
-#     cipherparams = ciphers[cipher]["mkparams"]()
-#     # Produce the encryption key and encrypt
-#     enckey = derivedkey[:16]
-#     c = encrypt(priv, enckey, cipherparams)
-#     # Compute the MAC
-#     mac = sha3(derivedkey[16:32] + c)
-#     # Make a UUID
-#     u = encode_hex(os.urandom(16))
-#     if sys.version_info.major == 3:
-#         u = bytes(u, 'utf-8')
-#     uuid = b'-'.join((u[:8], u[8:12], u[12:16], u[16:20], u[20:]))
-#     # Return the keystore json
-#     return {
-#         "crypto": {
-#             "cipher": cipher,
-#             "ciphertext": encode_hex(c),
-#             "cipherparams": cipherparams,
-#             "kdf": kdf,
-#             "kdfparams": kdfparams,
-#             "mac": encode_hex(mac),
-#             "version": 1
-#         },
-#         "id": uuid,
-#         "version": 3
-#     }
 
 class Account(object):
 
@@ -237,7 +159,10 @@ class Account(object):
     def pubkey(self):
         """The account's public key or `None` if the account is locked"""
         if not self.locked:
-            return privtopub(self.privkey)
+            pub_x,pub_y = privtopub(self.privkey)
+            pub = encode_int32(pub_x) + encode_int32(pub_y)
+            public_key = "{:0>128}".format(binascii.b2a_hex(pub).decode('ascii'))
+            return public_key
         else:
             return None
 

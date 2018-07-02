@@ -166,7 +166,7 @@
         </widget>
        </item>
        <item row="2" column="1" colspan="4">
-        <widget class="QLabel" name="label_address_2">
+        <widget class="QLabel" name="label_pubKey">
          <property name="cursor">
           <cursorShape>IBeamCursor</cursorShape>
          </property>
@@ -202,7 +202,7 @@
         </widget>
        </item>
        <item row="3" column="1" colspan="4">
-        <widget class="QLabel" name="label_address_3">
+        <widget class="QLabel" name="label_priKey">
          <property name="cursor">
           <cursorShape>IBeamCursor</cursorShape>
          </property>
@@ -254,7 +254,7 @@
         </widget>
        </item>
        <item row="0" column="1" rowspan="3">
-        <widget class="QTextBrowser" name="textBrowser"/>
+        <widget class="QTextBrowser" name="textBrowser_keyStore"/>
        </item>
        <item row="0" column="2">
         <widget class="QPushButton" name="pushButton_copyKeyStore">
