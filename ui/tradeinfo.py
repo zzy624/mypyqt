@@ -3,8 +3,7 @@
 import sys,time
 # import cgitb
 # cgitb.enable( format = 'text')
-from PyQt5.QtCore import *
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot,pyqtSignal,QThread,QObject
 from PyQt5.QtWidgets import QDialog, QApplication,QMessageBox
 from mypyqt.ui.pyui.ui_tradeinfo import Ui_tradeinfo
 from ethjsonrpc import EthJsonRpc

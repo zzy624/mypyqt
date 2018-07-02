@@ -6,7 +6,7 @@ import sys,time
 import pbkdf2
 from PyQt5.QtCore import *
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QDialog, QApplication,QMessageBox
+from PyQt5.QtWidgets import QDialog, QApplication,QMessageBox,QFileDialog
 from mypyqt.ui.pyui.ui_account import Ui_account
 import json
 import os
@@ -18,6 +18,7 @@ from ethereum.utils import privtopub  # this is different  than the one used in 
 from ethereum.utils import sha3, is_string, decode_hex, remove_0x_head,encode_hex,encode_int32
 import bitcoin
 import binascii
+import string
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from eth_utils.hexadecimal import decode_hex
@@ -25,23 +26,80 @@ from eth_utils.hexadecimal import decode_hex
 
 
 class MyAccount(QDialog, Ui_account):
+    setPassWord = pyqtSignal(str)
 
     def __init__(self):
         super(MyAccount, self).__init__()
         self.setupUi(self)
 
+        self.work = WorkThreadCreateAccount()
+        self.thread = QThread()
+        self.setPassWord.connect(self.work.SetPassWord)
+        self.work.moveToThread(self.thread)
+        self.thread.started.connect(self.work.run)
+
+        self.work.response.connect(self.account_show)
+
     @pyqtSlot()
     def on_pushButton_genAddress_clicked(self):
-        a = Account.new("123")
-        print("address:",encode_hex(a.address))
-        print("keystore:",a.keystore)
-        print("privkey",a.privkey)
-        print("pubkey",a.pubkey)
-        # public_key = encode_hex(bitcoin.privkey_to_pubkey(key))
+        passWord = self.lineEdit_pass.text()
+        if not passWord:
+            QMessageBox.information(self,"Warning", "请输入密码或者点击【生成密码】")
+            return
+        self.pushButton_genAddress.setEnabled(False)
+        self.setPassWord.emit(passWord)
+        self.thread.start()
+
+    @pyqtSlot()
+    def on_pushButton_genPass_clicked(self):
+        salt = ''.join(random.sample(string.ascii_letters + string.digits, 16))
+        self.lineEdit_pass.setText(salt)
+
+    @pyqtSlot()
+    def on_pushButton_copyPass_clicked(self):
+        clipboard = QApplication.clipboard()
+        clipboard.setText(self.lineEdit_pass.text())
+
+    @pyqtSlot()
+    def on_pushButton_copyAddress_clicked(self):
+        clipboard = QApplication.clipboard()
+        clipboard.setText(self.label_address.text())
+
+    @pyqtSlot()
+    def on_pushButton_copyPubKey_clicked(self):
+        clipboard = QApplication.clipboard()
+        clipboard.setText(self.label_pubKey.text())
+
+    @pyqtSlot()
+    def on_pushButton_copyPrivateKey_clicked(self):
+        clipboard = QApplication.clipboard()
+        clipboard.setText(self.label_priKey.text())
+
+    @pyqtSlot()
+    def on_pushButton_copyKeyStore_clicked(self):
+        clipboard = QApplication.clipboard()
+        clipboard.setText(self.textBrowser_keyStore.toPlainText())
+
+    @pyqtSlot()
+    def on_pushButton_exportKeyStore_clicked(self):
+        filename=QFileDialog.getSaveFileName(self,'keyStore','./' + time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()) + '-' + self.label_address.text())
+        with open(filename[0],'w') as f:
+            my_text=self.textBrowser_keyStore.toPlainText()
+            f.write(my_text)
+
+
+    def account_show(self,a):
         self.label_address.setText("0x"+encode_hex(a.address))
         self.label_pubKey.setText(str(a.pubkey))
         self.label_priKey.setText(encode_hex(a.privkey))
         self.textBrowser_keyStore.setText(str(a.keystore))
+        self.pushButton_genAddress.setEnabled(True)
+        self.thread.quit()
+        self.pushButton_copyAddress.setEnabled(True)
+        self.pushButton_copyPubKey.setEnabled(True)
+        self.pushButton_copyPrivateKey.setEnabled(True)
+        self.pushButton_copyKeyStore.setEnabled(True)
+        self.pushButton_exportKeyStore.setEnabled(True)
 
 
 def mk_random_privkey():
@@ -49,6 +107,27 @@ def mk_random_privkey():
     assert len(k) == 64
     # return k.decode('hex')
     return decode_hex(k)
+
+class WorkThreadCreateAccount(QObject):
+    response = pyqtSignal(object)
+    finished = pyqtSignal()
+
+    def __init__(self):
+        super(WorkThreadCreateAccount, self).__init__()
+        self.passWord = ""
+
+
+    def SetPassWord(self, passWord):
+        self.passWord = passWord
+
+    def Finished(self):
+        print("Finished")
+        self.WorkState = False
+        self.finished.emit()
+
+    def run(self):
+        resp = Account.new(self.passWord)
+        self.response.emit(resp)
 
 class Account(object):
 
