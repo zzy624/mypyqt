@@ -34,7 +34,6 @@ class TradeInfo(QDialog, Ui_tradeinfo):
 
         self.work.response.connect(self.connect_show)
         self.pushButtonConnectButton = True
-        self.client = None
 
     @pyqtSlot()
     def on_pushButtonConnect_clicked(self):
@@ -56,7 +55,7 @@ class TradeInfo(QDialog, Ui_tradeinfo):
                 self.pushButtonConnect.setText("断开")
                 self.textBrowserBlockNumber.clear()
             else:
-                QMessageBox.warning("Warning", "节点链接失败，请检查节点")
+                QMessageBox.warning(self,"Warning", "节点链接失败，请检查节点")
             self.ethClient.emit(self.client)
             self.thread.start()
         else:
@@ -83,18 +82,20 @@ class TradeInfo(QDialog, Ui_tradeinfo):
 
     @pyqtSlot()
     def on_pushButtonSearch_clicked(self):
-        txhash = self.lineEditTxHash.text()
+        txhash = self.lineEdit_txHash.text()
+        if not self.client:
+            QMessageBox.warning(self,"Warning", "请先链接节点")
+            return
         if self.client and txhash:
             resp = self.client.eth_getTransactionByHash(txhash)
-            # print(resp)
             if resp:
-                self.textBrowserTxHash.setText(resp['hash'])
-                self.textBrowserStatus.setText(self.client.eth_getTransactionReceipt(txhash)['status'])
-                self.textBrowserBlockHash.setText(resp['blockHash'])
-                self.textBrowserForm.setText(resp['from'])
-                self.textBrowserTo.setText(resp['to'])
-                self.textBrowserNonce.setText(str(int(resp['nonce'], 16)))
-                self.textBrowserData.setText(resp['input'])
+                self.label_txHash.setText(resp['hash'])
+                self.label_status.setText(self.client.eth_getTransactionReceipt(txhash)['status'])
+                self.label_blockTxHash.setText(resp['blockHash'])
+                self.label_from.setText(resp['from'])
+                self.label_to.setText(resp['to'])
+                self.label_nonce.setText(str(int(resp['nonce'], 16)))
+                self.textBrowser_data.setText(resp['input'])
 
     @pyqtSlot()
     def on_quit_clicked(self):

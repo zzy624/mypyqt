@@ -45,6 +45,10 @@ class UIMainWindow(QMainWindow,Ui_mainWindow):
         self.pushButtonConnectButton = True
         self.client = None
 
+    @property
+    def EthClient(self):
+        return self.client
+
     def addTab(self,widget):
         self.tabWidget.addTab(widget,widget.windowTitle())
 
