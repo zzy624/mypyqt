@@ -23,7 +23,7 @@ class UIMainWindow(QMainWindow,Ui_mainWindow):
         self.permission = Permission()
         tabs = [self.account,self.tradeInfo,self.permission]
         for t in tabs:
-            self.addTab(t)
+            self.addTabWidget(t)
         self.actionKeyStore.triggered.connect(self.OpenKeyStore)
         self.actionKeyStore.setShortcut('Ctrl+O')
         self.action_windowMin.triggered.connect(self.ShowMinimized)
@@ -49,8 +49,11 @@ class UIMainWindow(QMainWindow,Ui_mainWindow):
     def EthClient(self):
         return self.client
 
-    def addTab(self,widget):
-        self.tabWidget.addTab(widget,widget.windowTitle())
+    def addWidget(self,widget):
+        self.widget.(widget,widget.windowTitle())
+
+    def addTabWidget(self,Tab_widget):
+        self.tabWidget.addTab(Tab_widget,Tab_widget.windowTitle())
 
     def OpenKeyStore(self):
         fileName1, filetype = QFileDialog.getOpenFileName(self,"选取文件","./","All Files (*);;Text Files (*.txt)")
