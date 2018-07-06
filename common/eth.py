@@ -7,6 +7,12 @@ import sys,time
 from PyQt5.QtWidgets import QDialog, QApplication,QMessageBox
 from ethjsonrpc import EthJsonRpc
 
+def set_host(host):
+    global HOST
+    HOST = host
+def get_host():
+    return HOST
+
 def get_ethclient(host):
     if host == "":
         return None

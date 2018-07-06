@@ -11,11 +11,6 @@ from mypyqt.common import eth
 from eth_utils.hexadecimal import is_hex
 from ethjsonrpc import EthJsonRpc
 
-
-host = ""
-def set_host(h):
-    host = h
-
 class TradeInfo(QDialog, Ui_tradeinfo):
     ethClient = pyqtSignal(object)
     finishedWork = pyqtSignal()
@@ -27,21 +22,14 @@ class TradeInfo(QDialog, Ui_tradeinfo):
         # super(Yglian, self).__init__(None, Qt.Dialog | Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint)
 
         self.setupUi(self)
-        # self.ethClient = Ethclient()
-        # self.ethClient.ethClientHost.connect(self.set_host)
-        # self.setFixedSize(self.width(),self.height())
-        # self.setWindowFlags(Qt.WindowCloseButtonHint)
-        # self.setWindowFlags(Qt.W)
-        # self.work = WorkThreadEthConnect()
-        # self.thread = QThread()
-        self.host = ""
 
 
     @pyqtSlot()
     def on_pushButtonSearch_clicked(self):
-        print(host)
-        if host == "":
-            QMessageBox.information(self, "Information", "请输入节点地址")
+        self.pushButtonSearch.setFocus()
+        host = eth.get_host()
+        if host == "" or (":" not in host):
+            QMessageBox.information(self, "Information", "请输入有效节点地址")
             return
         client = eth.get_ethclient(host)
         if not client:
@@ -52,11 +40,8 @@ class TradeInfo(QDialog, Ui_tradeinfo):
             QMessageBox.warning(self, "Warning", "请输入有效的交易Hash")
             return
 
-        if self.client and txhash:
-            print(txhash)
-            resp = client.eth_getTransactionByHash("0x40a2ef1ada432257e06678ff97f19c93c0794653223bd8d22e3881cf4ad064e5")
-            print(resp)
-            print(client.eth_blockNumber())
+        if client and txhash:
+            resp = client.eth_getTransactionByHash(txhash)
             if resp:
                 self.label_txHash.setText(resp['hash'])
                 self.label_status.setText(client.eth_getTransactionReceipt(txhash)['status'])

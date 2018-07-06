@@ -44,7 +44,7 @@ class Ethclient(QDialog, Ui_ethclient):
     def on_pushButtonConnect_clicked(self):
         if self.pushButtonConnectButton:
             host = self.lineEditWeb3No.text()
-            if host == "":
+            if host == "" or (":" not in host):
                 QMessageBox.information(self,"Information","请输入节点地址")
                 return
             self.client = eth.get_ethclient(host)
@@ -99,21 +99,17 @@ class Ethclient(QDialog, Ui_ethclient):
             # self.inp_text_signal.emit("已进")
             if self.lineEditWeb3No.text().strip() == '请输入节点':
                 self.lineEditWeb3No.clear()
-            print("ok1")
         elif event.type()== QEvent.FocusOut:
             if self.lineEditWeb3No.text().strip() == '':
                 self.lineEditWeb3No.setText("请输入节点")
-            print("ok2")
-            host = self.lineEditWeb3No.text()
-            self.ethClientHost.emit(host)
+            self.ethClientHost.emit(self.lineEditWeb3No.text())
         else:
             pass
         return False
 
     @pyqtSlot(str)
     def set_host(self,host):
-        tradeinfo.set_host(host)
-        # print(host)
+        eth.set_host(host)
 
 class WorkThreadEthConnect(QObject):
     response = pyqtSignal(str)

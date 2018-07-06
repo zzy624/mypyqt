@@ -24,7 +24,7 @@ class UIMainWindow(QMainWindow,Ui_mainWindow):
         self.permission = Permission()
         self.ethclient = Ethclient()
         self.addWidget(self.ethclient)
-        tabs = [self.account,self.tradeInfo,self.permission]
+        tabs = [self.tradeInfo,self.account,self.permission]
         for t in tabs:
             self.addTabWidget(t)
         self.actionKeyStore.triggered.connect(self.OpenKeyStore)
