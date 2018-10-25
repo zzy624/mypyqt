@@ -5,7 +5,7 @@ qrc:
 app:
 	py2applet --make-setup main.py
 
-build:
+builds:
 	pyinstaller --noconfirm --clean main.py
 
 relse:

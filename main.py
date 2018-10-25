@@ -5,10 +5,10 @@ from PyQt5.QtCore import pyqtSlot,pyqtSignal,QThread,Qt,QObject
 from PyQt5.QtWidgets import  QApplication,QMainWindow,QAction,qApp,QFileDialog,QMessageBox
 from ethjsonrpc import EthJsonRpc
 from mypyqt.ui.pyui.ui_main import Ui_mainWindow
-from ui.tradeinfo import TradeInfo
-from ui.permission import Permission
-from ui.account import MyAccount
-from ui.ethclient import Ethclient
+from mypyqt.ui.tradeinfo import TradeInfo
+from mypyqt.ui.permission import Permission
+from mypyqt.ui.account import MyAccount
+from mypyqt.ui.ethclient import Ethclient
 
 
 class UIMainWindow(QMainWindow,Ui_mainWindow):

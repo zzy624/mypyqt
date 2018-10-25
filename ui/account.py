@@ -32,6 +32,7 @@ class MyAccount(QDialog, Ui_account):
         self.work.moveToThread(self.thread)
         self.thread.started.connect(self.work.run)
         self.work.response.connect(self.keystore_show)
+        self.PubKey = ''
 
 
     @pyqtSlot()
@@ -69,7 +70,7 @@ class MyAccount(QDialog, Ui_account):
     @pyqtSlot()
     def on_pushButton_copyPubKey_clicked(self):
         clipboard = QApplication.clipboard()
-        clipboard.setText(self.label_pubKey.text())
+        clipboard.setText(self.PubKey)
 
     @pyqtSlot()
     def on_pushButton_copyPrivateKey_clicked(self):
@@ -84,14 +85,18 @@ class MyAccount(QDialog, Ui_account):
     @pyqtSlot()
     def on_pushButton_exportKeyStore_clicked(self):
         filename=QFileDialog.getSaveFileName(self,'keyStore','./' + time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()) + '-' + self.label_address.text())
-        with open(filename[0],'w') as f:
-            my_text=self.textBrowser_keyStore.toPlainText()
-            f.write(my_text)
+        if filename[0]:
+            with open(filename[0],'w') as f:
+                my_text=self.textBrowser_keyStore.toPlainText()
+                f.write(my_text)
+        else:
+            return
 
 
     def account_show(self,account):
         self.label_address.setText(account["address"])
         self.label_pubKey.setText(account["public_key"][:40] + "...")
+        self.PubKey = account["public_key"]
         self.label_priKey.setText(account["private_key"])
         self.pushButton_genAddress.setEnabled(True)
         self.pushButton_copyAddress.setEnabled(True)

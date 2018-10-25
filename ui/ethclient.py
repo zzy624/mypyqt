@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QDialog, QApplication,QMessageBox
 from mypyqt.ui.pyui.ui_ethclient import Ui_ethclient
 from mypyqt.ui import tradeinfo
 from mypyqt.common import eth
-from ethjsonrpc import EthJsonRpc
+from ethjsonrpc import EthJsonRpc,exceptions
 
 class Ethclient(QDialog, Ui_ethclient):
     ethClient = pyqtSignal(object)
@@ -34,26 +34,33 @@ class Ethclient(QDialog, Ui_ethclient):
         self.thread.started.connect(self.work.run)
 
         self.work.response.connect(self.connect_show)
-        self.lineEditWeb3No.setText("请输入节点")
-        # self.lineEditWeb3No.focusOutEvent(,self.post_tradeinfo)
-        self.lineEditWeb3No.installEventFilter(self)
+        self.comboBox_webNo.addItem("https://web3.yglian.com")
+        self.comboBox_webNo.addItem("https://yglian-qa.qschou.com")
+        self.comboBox_webNo.setEditText("请选择节点")
+        # self.comboBox_webNo.focusOutEvent(,self.post_tradeinfo)
+        self.comboBox_webNo.installEventFilter(self)
         self.pushButtonConnectButton = True
         self.client = None
 
     @pyqtSlot()
     def on_pushButtonConnect_clicked(self):
         if self.pushButtonConnectButton:
-            host = self.lineEditWeb3No.text()
+            host = self.comboBox_webNo.currentText()
             if host == "" or (":" not in host):
                 QMessageBox.information(self,"Information","请输入节点地址")
                 return
-            self.client = eth.get_ethclient(host)
+            try:
+                self.client = eth.get_ethclient(host)
+            except exceptions.ConnectionError:
+                QMessageBox.warning(self,"Warning", "节点链接失败，请检查节点")
+                return
             if self.client:
                 self.pushButtonConnectButton = False
                 self.pushButtonConnect.setText("断开")
                 self.label_blockNumber.clear()
             else:
-                QMessageBox.warning("Warning", "节点链接失败，请检查节点")
+                QMessageBox.warning(self,"Warning", "节点链接失败，请检查节点")
+                return
             self.ethClient.emit(self.client)
             self.thread.start()
         else:
@@ -75,7 +82,7 @@ class Ethclient(QDialog, Ui_ethclient):
             self.label_blockNumber.clear()
 
     def get_ethclient(self):
-        host = self.lineEditWeb3No.text()
+        host = self.comboBox_webNo.text()
         if host == "":
             return None
         if "https" in host:
@@ -97,12 +104,12 @@ class Ethclient(QDialog, Ui_ethclient):
     def eventFilter(self,widget,event):
         if event.type()== QEvent.FocusIn:
             # self.inp_text_signal.emit("已进")
-            if self.lineEditWeb3No.text().strip() == '请输入节点':
-                self.lineEditWeb3No.clear()
+            if self.comboBox_webNo.currentText().strip() == '请输入节点':
+                self.comboBox_webNo.clear()
         elif event.type()== QEvent.FocusOut:
-            if self.lineEditWeb3No.text().strip() == '':
-                self.lineEditWeb3No.setText("请输入节点")
-            self.ethClientHost.emit(self.lineEditWeb3No.text())
+            if self.comboBox_webNo.currentText().strip() == '':
+                self.comboBox_webNo.setEditText("请输入节点")
+            self.ethClientHost.emit(self.comboBox_webNo.currentText())
         else:
             pass
         return False

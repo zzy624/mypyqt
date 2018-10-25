@@ -13,21 +13,23 @@ a = Analysis(['main.py'],
              excludes=[],
              win_no_prefer_redirects=False,
              win_private_assemblies=False,
-             cipher=block_cipher)
+             cipher=block_cipher,
+             noarchive=False)
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
-          a.binaries,
-          a.zipfiles,
-          a.datas,
+          [],
+          exclude_binaries=True,
           name='main',
           debug=False,
           strip=False,
           upx=True,
-          runtime_tmpdir=None,
-          console=False )
-app = BUNDLE(exe,
-             name='阳光链工具.app',
-             icon=None,
-             bundle_identifier=None)
+          console=True )
+coll = COLLECT(exe,
+               a.binaries,
+               a.zipfiles,
+               a.datas,
+               strip=False,
+               upx=True,
+               name='main')
